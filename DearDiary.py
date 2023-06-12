@@ -35,6 +35,7 @@ This is a simple text editor implemented using Python and Tkinter.
 
 """
 
+
 class Notepad:
     """@class Notepad @brief This class represents a Notepad in UTF-8 format with additional features like emojis,
     changing text style, and coloring. @details The Notepad includes various functionalities, including a file menu for
@@ -42,9 +43,10 @@ class Notepad:
 
     @note The emoji, text style, and color functionality are available via a hidden side panel that can be toggled on
     and off."""
+
     def __init__(self, root):
         self.root = root
-        self.root.title("UTF-8 Notepad")
+        self.root.title("DearDiary")
         self.root.geometry("925x600")
         self.side_panel = None
         self.side_panel_width = 200
@@ -149,39 +151,48 @@ class Notepad:
         """
         self.side_panel.configure(scrollregion=self.side_panel.bbox("all"))
 
-    def new_tab(self, title=None, content=""):
+    def new_tab(self, title=None, content=None):
         """
-        @brief Creates a new tab with optional content.
-        @param title: Title of the new tab. Default is None, which means a new tab is being created.
-        @param content: Content of the new tab. Default is empty string.
+        @brief Creates a new tab with an optional title and content.
+        @param title: This is an optional parameter that defaults to None. If a title is provided, the tab will be created with this title.
+        @param content: This is an optional parameter that defaults to None. If content is provided, the text widget will be filled with this content.
         """
         # Create a new tab with a Text widget
         tab = tk.Frame(self.tab_bar)
         text_area = tk.Text(tab, undo=True)
         text_area.pack(expand=1, fill='both')
 
-        # Insert the given content into the text widget
-        text_area.insert(tk.END, content)
-
-        # Add the new tab to the tab bar
-        # If title is not given, assign a new tab title
-        if title is None:
-            title = "Tab " + str(len(self.tab_bar.tabs()) + 1)
-        self.tab_bar.add(tab, text=title)
-
-    def toggle_side_panel(self):
-        """
-        @brief Toggles the visibility of the side panel.
-        """
-        if self.side_panel.winfo_ismapped():
-            self.side_panel.grid_forget()
-            self.side_panel_scrollbar.grid_forget()
+        # If a title is provided, use it. Otherwise, use the default title
+        if title is not None:
+            self.tab_bar.add(tab, text=title)
         else:
-            self.side_panel.grid(row=1, column=0, sticky="ns")
-            self.side_panel_scrollbar.grid(row=1, column=1, sticky="ns")
+            self.tab_bar.add(tab, text="Tab " + str(len(self.tab_bar.tabs()) + 1))
 
-        # Configure the side panel to not propagate resizing
-        self.side_panel.grid_propagate(0)
+        # If content is provided, insert it into the text widget
+        if content is not None:
+            text_area.insert(tk.END, content)
+
+        return tab  # Add this line to return the tab
+
+    def toggle_color_chooser(self):
+        """
+        ## @brief Toggles the visibility of the color chooser.
+        """
+        # Toggle visibility of the color chooser
+        if self.side_panel.winfo_ismapped():
+            self.side_panel.grid_remove()
+        else:
+            self.side_panel.grid(row=1, column=0, sticky="nsew")  # use grid here
+
+        # Clear the side panel
+        for widget in self.side_panel.winfo_children():
+            widget.destroy()
+
+        # Create color chooser buttons
+        fg_color_btn = tk.Button(self.side_panel, text="Foreground", command=self.choose_fg_color)
+        bg_color_btn = tk.Button(self.side_panel, text="Background", command=self.choose_bg_color)
+        fg_color_btn.pack(fill=tk.X)
+        bg_color_btn.pack(fill=tk.X)
 
     def close_current_tab(self):
         """
@@ -190,7 +201,6 @@ class Notepad:
         # Close the current tab
         if len(self.tab_bar.tabs()) > 0:
             self.tab_bar.forget(self.tab_bar.select())
-
 
     def close_all_tabs(self):
         """
@@ -239,8 +249,6 @@ class Notepad:
             # Update the tab title
             self.tab_bar.tab(current_tab, text=os.path.basename(filepath))
 
-
-
     def toggle_emoji_panel(self):
         """
         ## @brief Toggles the visibility of the emoji panel.
@@ -278,8 +286,6 @@ class Notepad:
         self.side_panel.update_idletasks()  # Force update of the GUI
         self.update_scrollregion()
 
-
-
     def insert_emoji(self, emoji):
         """
         ## @brief Inserts the selected emoji into the current tab's text area.
@@ -290,8 +296,6 @@ class Notepad:
         if current_tab:
             text_widget = self.tab_bar.nametowidget(current_tab).winfo_children()[0]
             text_widget.insert(tk.INSERT, emoji)
-
-
 
     def change_style(self):
         """
@@ -337,8 +341,6 @@ class Notepad:
         self.side_panel.update_idletasks()  # Force update of the GUI
         self.update_scrollregion()
 
-
-
     def display_text_in_style(self, style):
         """
         ## @brief Displays the text in the provided style.
@@ -359,8 +361,6 @@ class Notepad:
             text_widget = self.tab_bar.nametowidget(current_tab).winfo_children()[0]
             text_widget.insert(tk.INSERT, styled_text + "\n")
 
-
-
     def toggle_color_chooser(self):
         """
         ## @brief Toggles the visibility of the color chooser.
@@ -380,8 +380,6 @@ class Notepad:
         bg_color_btn = tk.Button(self.side_panel, text="Background", command=self.choose_bg_color)
         fg_color_btn.pack(fill=tk.X)
         bg_color_btn.pack(fill=tk.X)
-
-
 
     def choose_fg_color(self):
         """
@@ -404,6 +402,7 @@ class Notepad:
         current_tab = self.tab_bar.select()
         if current_tab:
             text_widget = self.tab_bar.nametowidget(current_tab).winfo_children()[0]
+
             text_widget.config(bg=bg_color)
 
     def display_readme(self):
@@ -419,7 +418,6 @@ class Notepad:
             text_area.insert(1.0, f.read())
         text_area.config(state='disabled')  # make it read-only
 
-
     def save_state(self):
         """
         @brief Saves the current state of all tabs into a JSON file.
@@ -428,8 +426,11 @@ class Notepad:
         for tab in self.tab_bar.tabs():
             text_widget = self.tab_bar.nametowidget(tab).winfo_children()[0]
             content = text_widget.get(1.0, tk.END)
+            fg_color = text_widget.cget('fg')
+            bg_color = text_widget.cget('bg')
+
             title = self.tab_bar.tab(tab, "text")
-            state.append({"title": title, "content": content})
+            state.append({"title": title, "content": content, "fg_color": fg_color, "bg_color": bg_color})
 
         with open('progress.json', 'w', encoding='utf-8') as f:
             json.dump(state, f, ensure_ascii=False, indent=4)
@@ -443,10 +444,11 @@ class Notepad:
                 state = json.load(f)
 
             for tab_state in state:
-                self.new_tab(tab_state["title"], tab_state["content"])
+                tab = self.new_tab(tab_state["title"], tab_state["content"])
+                text_widget = tab.winfo_children()[0]
+                text_widget.config(fg=tab_state["fg_color"], bg=tab_state["bg_color"])
         except FileNotFoundError:
             pass  # No saved state, so just continue
-
     def on_close(self):
         """
         @brief Saves the current state and closes the application.
@@ -479,6 +481,8 @@ class Notepad:
             text_widget.insert(tk.INSERT, self.root.clipboard_get())
         except tk.TclError:
             pass  # No text in clipboard, do nothing
+
+
 if __name__ == "__main__":
     root = tk.Tk()
 

@@ -1,6 +1,32 @@
 [
     {
-        "title": "Tab 1",
-        "content": "\n"
+        "title": "Tab 2",
+        "content": "\n\n\n\n\n",
+        "fg_color": "SystemWindowText",
+        "bg_color": "SystemWindow"
+    },
+    {
+        "title": "Tab 3",
+        "content": "\n\n\n\n",
+        "fg_color": "SystemWindowText",
+        "bg_color": "SystemWindow"
+    },
+    {
+        "title": "Tab 4",
+        "content": "\n\n\n",
+        "fg_color": "SystemWindowText",
+        "bg_color": "SystemWindow"
+    },
+    {
+        "title": "Tab 4",
+        "content": "\n\n",
+        "fg_color": "SystemWindowText",
+        "bg_color": "SystemWindow"
+    },
+    {
+        "title": "Tab 5",
+        "content": "\n",
+        "fg_color": "SystemWindowText",
+        "bg_color": "SystemWindow"
     }
 ]
